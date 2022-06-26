@@ -1,9 +1,7 @@
 package main
 
 import (
-	"encoding/xml"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -17,39 +15,6 @@ func main() {
 	icon.LinearGradient[0].Stop[0].Style = fmt.Sprintf("stop-color:%v", randomColor())
 
 	fmt.Println(icon)
-}
-
-func unmarshalSvg(filePath string) svg {
-	var icon svg
-	data, err := os.ReadFile(filePath)
-	if err != nil {
-		log.Fatal(err)
-	}
-	err = xml.Unmarshal(data, &icon)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return icon
-}
-
-type rawXML struct {
-	Inner []byte `xml:",innerxml"`
-}
-
-type svg struct {
-	XMLName        xml.Name         `xml:"svg"`
-	LinearGradient []linearGradient `xml:"linearGradient"`
-	Path           []rawXML         `xml:"path"`
-}
-
-type linearGradient struct {
-	Stop []stop `xml:"stop"`
-}
-
-type stop struct {
-	Offset      string `xml:"offset,attr"`
-	StopOpacity string `xml:"stop-opacity,attr"`
-	Style       string `xml:"style,attr"`
 }
 
 func readFiles(in string) []string {
