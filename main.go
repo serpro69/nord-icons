@@ -12,7 +12,11 @@ import (
 func main() {
 	files := readFiles("candy-icons/apps/scalable")
 
-	fmt.Println(unmarshalSvg(files[0]))
+	icon := unmarshalSvg(files[0])
+
+	icon.LinearGradient[0].Stop[0].Style = fmt.Sprintf("stop-color:%v", randomColor())
+
+	fmt.Println(icon)
 }
 
 func unmarshalSvg(filePath string) svg {
