@@ -11,21 +11,26 @@ import (
 )
 
 func main() {
-	files := readFiles("candy-icons/apps/scalable")
-
-	doc := createXmlDoc(files[0])
-
-	outFile, _ := os.Create("out/test.svg")
-	writer := bufio.NewWriter(outFile)
-	if _, err := doc.WriteTo(writer); err != nil {
-		log.Fatal(err)
-	}
-	if err := writer.Flush(); err != nil {
-		log.Fatal(err)
+	for _, file := range readFiles("candy-icons/apps/scalable") {
+		doc := createXmlDoc(file.Second)
+		outFile, _ := os.Create(fmt.Sprintf("out/%v", file.First))
+		writer := bufio.NewWriter(outFile)
+		if _, err := doc.WriteTo(writer); err != nil {
+			log.Fatal(err)
+		}
+		if err := writer.Flush(); err != nil {
+			log.Fatal(err)
+		}
 	}
 }
 
+type Pair[F, S any] struct {
+	First  F
+	Second S
+}
+
 func createXmlDoc(path string) *etree.Document {
+	fmt.Println("Process file:", path)
 	doc := etree.NewDocument()
 
 	if err := doc.ReadFromFile(path); err != nil {
@@ -36,7 +41,13 @@ func createXmlDoc(path string) *etree.Document {
 
 	for _, gradient := range root.FindElements("linearGradient") {
 		for _, s := range gradient.FindElements("stop") {
-			style := s.SelectAttr("style")
+			var style *etree.Attr
+			switch {
+			case s.SelectAttr("style") != nil:
+				style = s.SelectAttr("style")
+			case s.SelectAttr("stop-color") != nil:
+				style = s.SelectAttr("stop-color")
+			}
 			style.Value = fmt.Sprintf("stop-color:%v", randomColor())
 		}
 	}
@@ -44,7 +55,7 @@ func createXmlDoc(path string) *etree.Document {
 	return doc
 }
 
-func readFiles(in string) []string {
+func readFiles(in string) []Pair[string, string] {
 	f, err := os.Open(in)
 	if err != nil {
 		fmt.Println(err)
@@ -64,11 +75,15 @@ func readFiles(in string) []string {
 	}
 
 	//out := make(map[os.DirEntry]string)
-	var out []string
+	var out []Pair[string, string]
 
 	for _, file := range files {
 		if extension(file.Name()) == "svg" && file.Type().IsRegular() {
-			out = append(out, filepath.Join(path, file.Name()))
+			p := Pair[string, string]{
+				First:  file.Name(),
+				Second: filepath.Join(path, file.Name()),
+			}
+			out = append(out, p)
 		}
 	}
 
