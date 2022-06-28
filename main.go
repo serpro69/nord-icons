@@ -13,8 +13,15 @@ import (
 func main() {
 	for _, file := range readFiles("candy-icons/apps/scalable") {
 		doc := createXmlDoc(file.Second)
-		outFile, _ := os.Create(fmt.Sprintf("out/%v", file.First))
-		writer := bufio.NewWriter(outFile)
+		var writer *bufio.Writer
+		if err := os.MkdirAll("out", os.FileMode(0755)); err != nil {
+			log.Fatal(err)
+		}
+		if outFile, err := os.Create(fmt.Sprintf("out/%v", file.First)); err != nil {
+			log.Fatal(err)
+		} else {
+			writer = bufio.NewWriter(outFile)
+		}
 		if _, err := doc.WriteTo(writer); err != nil {
 			log.Fatal(err)
 		}
@@ -30,7 +37,7 @@ type Pair[F, S any] struct {
 }
 
 func createXmlDoc(path string) *etree.Document {
-	fmt.Println("Process file:", path)
+	//log.Println("Process file:", path)
 	doc := etree.NewDocument()
 
 	if err := doc.ReadFromFile(path); err != nil {
