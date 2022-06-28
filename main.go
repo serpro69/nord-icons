@@ -1,10 +1,9 @@
 package main
 
 import (
-	"bytes"
-	"encoding/xml"
+	"bufio"
 	"fmt"
-	"io"
+	"github.com/beevik/etree"
 	"log"
 	"os"
 	"path/filepath"
@@ -14,56 +13,35 @@ import (
 func main() {
 	files := readFiles("candy-icons/apps/scalable")
 
-	file, err := os.Open(files[0])
+	doc := createXmlDoc(files[0])
 
-	if err != nil {
+	outFile, _ := os.Create("out/test.svg")
+	writer := bufio.NewWriter(outFile)
+	if _, err := doc.WriteTo(writer); err != nil {
+		log.Fatal(err)
+	}
+	if err := writer.Flush(); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func createXmlDoc(path string) *etree.Document {
+	doc := etree.NewDocument()
+
+	if err := doc.ReadFromFile(path); err != nil {
 		log.Fatal(err)
 	}
 
-	defer file.Close()
+	root := doc.SelectElement("svg")
 
-	var buf bytes.Buffer
-
-	decoder := xml.NewDecoder(file)
-	encoder := xml.NewEncoder(&buf)
-
-	for {
-		token, err := decoder.Token()
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			log.Printf("error getting token: %v\n", err)
-			break
-		}
-
-		switch v := token.(type) {
-		case xml.StartElement:
-			if v.Name.Local == "linearGradient" {
-				var gradient linearGradient
-				if err = decoder.DecodeElement(&gradient, &v); err != nil {
-					log.Fatal(err)
-				}
-				for i := range gradient.Stop {
-					gradient.Stop[i].Style = fmt.Sprintf("stop-color:%v", randomColor())
-				}
-				if err = encoder.EncodeElement(gradient, v); err != nil {
-					log.Fatal(err)
-				}
-				continue
-			}
-		}
-
-		if err := encoder.EncodeToken(xml.CopyToken(token)); err != nil {
-			log.Fatal(err)
+	for _, gradient := range root.FindElements("linearGradient") {
+		for _, s := range gradient.FindElements("stop") {
+			style := s.SelectAttr("style")
+			style.Value = fmt.Sprintf("stop-color:%v", randomColor())
 		}
 	}
 
-	if err := encoder.Flush(); err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println(buf.String())
+	return doc
 }
 
 func readFiles(in string) []string {
