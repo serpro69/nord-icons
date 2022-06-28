@@ -3,9 +3,12 @@ package main
 import (
 	"math/rand"
 	"strings"
+	"time"
 )
 
 type palette string
+
+var r = rand.New(rand.NewSource(time.Now().UnixNano()))
 
 // https://www.nordtheme.com/docs/colors-and-palettes
 const (
@@ -21,13 +24,13 @@ func (p palette) colors() []string {
 
 func (p palette) randomColor() string {
 	colors := p.colors()
-	i := rand.Intn(len(colors))
+	i := r.Intn(len(colors))
 	return colors[i]
 }
 
 func randomPalette() palette {
 	all := []palette{PolarNight, SnowStorm, Frost, Aurora}
-	i := rand.Intn(len(all))
+	i := r.Intn(len(all))
 	return all[i]
 }
 
@@ -41,6 +44,6 @@ func allColors() []string {
 
 func randomColor() string {
 	colors := allColors()
-	i := rand.Intn(len(colors))
+	i := r.Intn(len(colors))
 	return colors[i]
 }
