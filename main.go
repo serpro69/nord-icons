@@ -12,22 +12,32 @@ import (
 )
 
 func main() {
-	for _, file := range readFiles("candy-icons/apps/scalable") {
-		doc := createXmlDoc(file.Second)
-		var writer *bufio.Writer
-		if err := os.MkdirAll("out", os.FileMode(0755)); err != nil {
-			log.Fatal(err)
-		}
-		if outFile, err := os.Create(fmt.Sprintf("out/%v", file.First)); err != nil {
-			log.Fatal(err)
-		} else {
-			writer = bufio.NewWriter(outFile)
-		}
-		if _, err := doc.WriteTo(writer); err != nil {
-			log.Fatal(err)
-		}
-		if err := writer.Flush(); err != nil {
-			log.Fatal(err)
+	for _, dir := range []string{
+		"apps/scalable",
+		"devices/scalable",
+		"mimetypes/scalable",
+		"places/16",
+		"places/48",
+		"preferences/scalable",
+	} {
+		for _, file := range readFiles(fmt.Sprintf("candy-icons/%v", dir)) {
+			outDir := fmt.Sprintf("out/nord-icons/%v", dir)
+			doc := createXmlDoc(file.Second)
+			var writer *bufio.Writer
+			if err := os.MkdirAll(outDir, os.FileMode(0755)); err != nil {
+				log.Fatal(err)
+			}
+			if outFile, err := os.Create(fmt.Sprintf("%v/%v", outDir, file.First)); err != nil {
+				log.Fatal(err)
+			} else {
+				writer = bufio.NewWriter(outFile)
+			}
+			if _, err := doc.WriteTo(writer); err != nil {
+				log.Fatal(err)
+			}
+			if err := writer.Flush(); err != nil {
+				log.Fatal(err)
+			}
 		}
 	}
 }
