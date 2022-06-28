@@ -56,8 +56,17 @@ func createXmlDoc(path string) *etree.Document {
 	}
 
 	root := doc.SelectElement("svg")
+	var gradients []*etree.Element
 
-	for _, gradient := range root.FindElements("linearGradient") {
+	if defs := root.FindElement("defs"); defs != nil && hasStopElements(*defs) {
+		gradients = defs.FindElements("linearGradient")
+	} else if g := root.FindElement("g"); g != nil && hasStopElements(*g) {
+		gradients = g.FindElements("linearGradient")
+	} else {
+		gradients = root.FindElements("linearGradient")
+	}
+
+	for _, gradient := range gradients {
 		p := randomPalette()
 		var colors []string
 		for _, s := range gradient.FindElements("stop") {
@@ -88,6 +97,15 @@ func createXmlDoc(path string) *etree.Document {
 	}
 
 	return doc
+}
+
+func hasStopElements(e etree.Element) bool {
+	for _, lg := range e.FindElements("linearGradient") {
+		if len(lg.FindElements("stop")) > 0 {
+			return true
+		}
+	}
+	return false
 }
 
 func contains(s []string, ele string) bool {
