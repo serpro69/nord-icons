@@ -5,5 +5,8 @@ A simple app that converts [candy-icons](https://github.com/EliverLara/candy-ico
 ## Usage
 
 - initialize the `candy-icons` git submodule: `git submodule sync`
+- copy existing `candy-icons` to `out` dir (this is needed to preserve symlinks): `mkdir out && cp candy-icons out/nord-icons -r`
+- rename the icon theme: `sed -i 's/Name=.*/Name=nord-icons/' out/nord-icons/index.theme`
 - run the `main.go` file: `go run .`
-- check the generated svg files in the `out` directory
+  - this can be executed multiple times until desirable colors are generated (each run generates random colors from Nord palettes)
+- copy the `out/nord-icons` dir to a directory with icons, e.g. into a user's home dir `cp out/nord-icons ~/.local/share/icons/. -r`
