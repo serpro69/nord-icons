@@ -25,6 +25,12 @@ func (p palette) randomColor() string {
 	return colors[i]
 }
 
+func randomPalette() palette {
+	all := []palette{PolarNight, SnowStorm, Frost, Aurora}
+	i := rand.Intn(len(all))
+	return all[i]
+}
+
 func allColors() []string {
 	var all []string
 	all = PolarNight.colors()
