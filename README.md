@@ -10,3 +10,4 @@ A simple app that converts [candy-icons](https://github.com/EliverLara/candy-ico
 - run the `main.go` file: `go run .`
   - this can be executed multiple times until desirable colors are generated (each run generates random colors from Nord palettes)
 - copy the `out/nord-icons` dir to a directory with icons, e.g. into a user's home dir `cp out/nord-icons ~/.local/share/icons/. -r`
+  - (optionally) copy the icons from this repo as well: `cp nord-icons/* ~/.local/share/icons/nord-icons/. -r`
