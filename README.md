@@ -4,6 +4,24 @@ A simple app that converts [candy-icons](https://github.com/EliverLara/candy-ico
 
 ## Usage
 
+You can install the icons manually or use a small script which will do (almost) everything for you.
+
+Whichever you choose, you'll need to clone this repo first somewhere and then proceed with one of the below installation options.
+
+```shell
+tempdir=$(mktemp -d -u) && git clone git@github.com:serpro69/nord-icons.git "$tempdir" && cd "$tempdir"
+```
+
+### Install script
+
+Run the [`install.sh`](install.sh) script which will handle everything for you: `./install.sh --copy -p <path_to_icons_dir>`
+
+Use the `--help` option to get all usage details.
+
+### Manual
+
+You can also do the same manually with the following steps:
+
 - initialize the `candy-icons` git submodule: `git submodule sync`
 - copy existing `candy-icons` to `out` dir (this is needed to preserve symlinks): `mkdir out && cp candy-icons out/nord-icons -r`
 - rename the icon theme: `sed -i 's/Name=.*/Name=nord-icons/' out/nord-icons/index.theme`
