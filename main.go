@@ -58,12 +58,18 @@ func createXmlDoc(path string) *etree.Document {
 	root := doc.SelectElement("svg")
 	var gradients []*etree.Element
 
-	if defs := root.FindElement("defs"); defs != nil && hasStopElements(*defs) {
-		gradients = defs.FindElements("linearGradient")
-	} else if g := root.FindElement("g"); g != nil && hasStopElements(*g) {
-		gradients = g.FindElements("linearGradient")
-	} else {
-		gradients = root.FindElements("linearGradient")
+	for _, defs := range root.FindElements("defs") {
+		if hasStopElements(*defs) {
+			gradients = append(gradients, defs.FindElements("linearGradient")...)
+		}
+	}
+	for _, g := range root.FindElements("g") {
+		if hasStopElements(*g) {
+			gradients = append(gradients, g.FindElements("linearGradient")...)
+		}
+	}
+	for _, linearGradient := range root.FindElements("linearGradient") {
+		gradients = append(gradients, linearGradient)
 	}
 
 	for _, gradient := range gradients {
