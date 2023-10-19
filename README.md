@@ -31,3 +31,15 @@ You can also do the same manually with the following steps:
   - this can be executed multiple times until desirable colors are generated (each run generates random colors from Nord palettes)
 - copy the `out/nord-icons` dir to a directory with icons, e.g. into a user's home dir `cp out/nord-icons ~/.local/share/icons/. -r`
   - (optionally) copy the icons from this repo as well: `cp nord-icons/* ~/.local/share/icons/nord-icons/. -r`
+
+### Post-install
+
+If you're using any additional icon theme (e.g. for folders) and want it to inherit the icons, modify the `index.theme` file (of your current theme) accordingly, e.g.:
+
+```diff
+[Icon Theme]
+Name=Nordic-Darker
+Comment=Folders for Nordic darker gtk theme.
+-Inherits=Pop,Papirus-Dark,breeze-dark,Zafiro,ubuntu-mono-dark,Mint-X,elementary,gnome,hicolor
++Inherits=nord-icons,Pop,Papirus-Dark,breeze-dark,Zafiro,ubuntu-mono-dark,Mint-X,elementary,gnome,hicolor
+```
