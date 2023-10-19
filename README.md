@@ -11,7 +11,7 @@ You can install the icons manually or use a small script which will do (almost) 
 Whichever you choose, you'll need to clone this repo first somewhere and then proceed with one of the below installation options.
 
 ```shell
-tempdir=$(mktemp -d -u) && git clone git@github.com:serpro69/nord-icons.git "$tempdir" && cd "$tempdir"
+tempdir=$(mktemp -d -u) && git clone --recurse-submodules git@github.com:serpro69/nord-icons.git "$tempdir" && cd "$tempdir"
 ```
 
 ### Install script
