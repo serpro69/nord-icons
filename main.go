@@ -3,12 +3,13 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"github.com/beevik/etree"
 	"log"
 	"os"
 	"path/filepath"
 	"sort"
 	"strings"
+
+	"github.com/beevik/etree"
 )
 
 func main() {
@@ -68,9 +69,7 @@ func createXmlDoc(path string) *etree.Document {
 			gradients = append(gradients, g.FindElements("linearGradient")...)
 		}
 	}
-	for _, linearGradient := range root.FindElements("linearGradient") {
-		gradients = append(gradients, linearGradient)
-	}
+	gradients = append(gradients, root.FindElements("linearGradient")...)
 
 	for _, gradient := range gradients {
 		p := randomPalette()
@@ -84,21 +83,23 @@ func createXmlDoc(path string) *etree.Document {
 			case s.SelectAttr("stop-color") != nil:
 				style = s.SelectAttr("stop-color")
 			}
-			for {
-				if len(p.colors()) == len(colors) {
-					color = p.randomColor()
-					colors = []string{}
-					colors = append(colors, color)
-					break
-				} else if contains(colors, color) {
-					continue
-				} else {
-					color = p.randomColor()
-					colors = append(colors, color)
-					break
+			if style != nil {
+				for {
+					if len(p.colors()) == len(colors) {
+						color = p.randomColor()
+						colors = []string{}
+						colors = append(colors, color)
+						break
+					} else if contains(colors, color) {
+						continue
+					} else {
+						color = p.randomColor()
+						colors = append(colors, color)
+						break
+					}
 				}
+				style.Value = fmt.Sprintf("stop-color:%v", color)
 			}
-			style.Value = fmt.Sprintf("stop-color:%v", color)
 		}
 	}
 
@@ -139,7 +140,7 @@ func readFiles(in string) []Pair[string, string] {
 		panic("Error getting absolute path")
 	}
 
-	//out := make(map[os.DirEntry]string)
+	// out := make(map[os.DirEntry]string)
 	var out []Pair[string, string]
 
 	for _, file := range files {
